@@ -9,7 +9,7 @@ The project is designed with modularity and scalability in mind, ensuring that e
 - Handles the dissection of Ethernet headers, including MAC addresses and protocol type.
 - Parses only supported EtherTypes (e.g., IPv4). If the EtherType indicates IPv6, parsing is terminated for that packet.
 
-2. IPv4 Parsing
+2. IPv4 Header Parsing 
 - Focuses on interpreting IPv4 headers, extracting fields like source and destination IP addresses, TTL, and protocol type.
 - Performs sanity checks (e.g., header length validation).
 
