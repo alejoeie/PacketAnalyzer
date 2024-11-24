@@ -1,0 +1,1 @@
+/usr/bin/cc  -std=gnu11 -Wall -Wstrict-prototypes -Wshadow -Werror -Wl,--dependency-file,CMakeFiles/packet_analyzer.dir/link.d CMakeFiles/packet_analyzer.dir/src/pkt_analyzer.c.o -o packet_analyzer
