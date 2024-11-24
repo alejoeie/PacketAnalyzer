@@ -43,5 +43,5 @@ CMakeFiles/packet_analyzer.dir/src/pkt_analyzer.c.o: \
  /usr/include/bits/stdio_lim.h /usr/include/bits/floatn.h \
  /usr/include/bits/floatn-common.h /usr/include/netdb.h \
  /usr/include/rpc/netdb.h /usr/include/bits/netdb.h \
- /home/alejoeie/Documents/packet_analyzer/pkt-src/include/pkt_headers.h \
- /home/alejoeie/Documents/packet_analyzer/pkt-src/include/pkt_analyzer.h
+ /home/alejoeie/Documents/packet_analyzer/pkt-src/src/../include/pkt_headers.h \
+ /home/alejoeie/Documents/packet_analyzer/pkt-src/src/../include/pkt_analyzer.h
