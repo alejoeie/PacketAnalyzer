@@ -1,3 +1,0 @@
-/home/alejoeie/Documents/packet_analyzer/pkt-src/build/CMakeFiles/packet_analyzer.dir
-/home/alejoeie/Documents/packet_analyzer/pkt-src/build/CMakeFiles/edit_cache.dir
-/home/alejoeie/Documents/packet_analyzer/pkt-src/build/CMakeFiles/rebuild_cache.dir
