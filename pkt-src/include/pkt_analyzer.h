@@ -8,6 +8,4 @@ typedef enum {
     PACKET_ANALYZER_MAX
 }packet_parser_result_e;
 
-packet_parser_result_e packet_parser_retrieve_pkt_data(int unix_cmd, char* cmd);
-
 #endif

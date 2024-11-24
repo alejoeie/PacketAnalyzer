@@ -11,60 +11,22 @@
 #include <string.h>
 #include <stdio.h>
 #include <netdb.h>
+#include <pcap.h>
 #include "../include/pkt_headers.h"
 #include "../include/pkt_analyzer.h"
-
-packet_parser_result_e packet_parser_retrieve_pkt_data(int unix_cmd, char* cmd){
-    struct addrinfo hints, *res, *p;
-    int status;
-    char ip_str[INET_ADDRSTRLEN];
-
-    if (unix_cmd < 2) {
-        fprintf(stderr, "Usage: packet_analyzer hostname\n");
-        return PACKET_ANALYZER_RES_NONE;
-    }
-    memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
-
-    // Connection ready
-    if(0 != (status = getaddrinfo(cmd, NULL, &hints, &res))){
-        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
-        return PACKET_ANALYZER_RES_FAIL;
-    }
-
-    for(p = res;p != NULL; p = p->ai_next) {
-        void *addr;
-        char *ipver;
-
-        // get the pointer to the address itself,
-        // different fields in IPv4 and IPv6:
-        if (p->ai_family == AF_INET) { // IPv4
-            struct sockaddr_in *ipv4 = (struct sockaddr_in *)p->ai_addr;
-            addr = &(ipv4->sin_addr);
-            ipver = "IPv4";
-        } else { // IPv6
-            struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)p->ai_addr;
-            addr = &(ipv6->sin6_addr);
-            ipver = "IPv6";
-        }
-
-        // convert the IP to a string and print it:
-        inet_ntop(p->ai_family, addr, ip_str, sizeof ip_str);
-        printf("  %s: %s\n", ipver, ip_str);
-    }
-
-    freeaddrinfo(res); // free the linked list
-    return PACKET_ANALYZER_RES_OK;
-}
+#include "../include/pcap_utils/pcap_init.h"
 
 int main(int argc, char* argv[]) {
 
-    if(PACKET_ANALYZER_RES_OK != packet_parser_retrieve_pkt_data(argc, argv[1])){
-        fprintf(stderr, "Invalid packet data fetching");
+    struct pcap_device_s *dev_init = {0};
+
+    dev_init = pkt_pcap_alloc_device();
+
+    if (0 != pkt_pcap_init_available_devices(dev_init)) {
         return -1;
     }
-    
+
+    pkt_pcap_destroy_device(dev_init);    
     
     return 0;
 }
