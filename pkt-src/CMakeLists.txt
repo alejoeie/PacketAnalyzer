@@ -12,11 +12,18 @@ set(CXX_WARNINGS "-Wall -Wshadow -Werror")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu11 ${C_WARNINGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 ${CXX_WARNINGS}")
 
+# Include directories
 set(INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
-
 include_directories(${INCLUDE_DIR})
 
-# Source files
-file(GLOB SOURCES "src/*.c")
+# Add subdirectory
+add_subdirectory(src/pcap_utils)
+
+# Collect source files
+set(SOURCES
+    src/pkt_analyzer.c
+)
 
 add_executable(packet_analyzer ${SOURCES})
+
+target_link_libraries(packet_analyzer pcap_utils)
