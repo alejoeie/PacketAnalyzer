@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -7,7 +8,7 @@
 #include <pcap.h>
 #include "../../include/pcap_utils/pcap_init.h"
 
-struct pcap_device_s  *pkt_pcap_alloc_device(void){
+struct pcap_device_s  *pcap_alloc_device(void){
     struct pcap_device_s *device = (struct pcap_device_s *)calloc(0, sizeof(struct pcap_device_s));
     if (device == NULL) {
         fprintf(stderr, "Failed to allocate new device\n");
@@ -16,23 +17,23 @@ struct pcap_device_s  *pkt_pcap_alloc_device(void){
     return device;
 }
 
-int pkt_pcap_init_available_devices(struct pcap_device_s *device) {
-    int ret;
+pcap_result_e pcap_init_available_devices(struct pcap_device_s *device) {
+    // int ret;
     int all_devs;
-    struct in_addr addr;
+    // struct in_addr addr;
     struct pcap_if *pcap_device, *d;
 
 
     if(device == NULL) {
         fprintf(stderr, "Device does not exist\n");
-        return -1;
+        return PCAP_RET_FAIL;
     }
 
     if (-1 == (all_devs = pcap_findalldevs(&pcap_device, device->errbuf))) {
         fprintf(stderr, "ERROR %s", device->errbuf);
-        return -1;
+        return PCAP_RET_FAIL;
     }
-
+    
     for (d = pcap_device; d != NULL; d = d->next){
         printf("\t============\n");
         printf("\tInterface: %s\n", d->name);
@@ -60,30 +61,44 @@ int pkt_pcap_init_available_devices(struct pcap_device_s *device) {
         } else {
             printf("\tAddresses: (No addresses available)\n");
         }
-
     }
 
-    printf("Device name: %s\n", device->dev);
+    device->capture = pcap_device;
 
-    if(-1 == (ret = pcap_lookupnet(device->dev, &device->netp, &device->maskp, device->errbuf))){
-        fprintf(stderr, "ERROR %s", device->errbuf);
-        return -1;
-    }
-
-
-    addr.s_addr = device->maskp;
-    device->mask = inet_ntoa(addr);
-
-    if (NULL == (device->net = inet_ntoa(addr))) {
-        perror("inet_ntoa");
-        return -1;
-    }
-
-
-    return 0;
+    return PCAP_RET_OK;
 }
 
-void pkt_pcap_destroy_device(struct pcap_device_s* device){
+
+pcap_result_e pcap_register_pkt(char *device_list) {
+    char dev_names[PCAP_MAX_DEVS][PCAP_MAX_NAME_LEN];
+    int iter = 0;
+    struct pcap_device_s *dev_init, *capture_pkt;
+
+    dev_init = pcap_alloc_device();
+
+    if (PCAP_RET_OK != pcap_init_available_devices(dev_init)) {
+        return PCAP_RET_FAIL;
+    }
+ 
+    for(capture_pkt = dev_init; capture_pkt->capture != NULL; capture_pkt->capture = capture_pkt->capture->next){
+        strncpy(dev_names[iter], capture_pkt->capture->name, PCAP_MAX_NAME_LEN - 1);
+        dev_names[iter][PCAP_MAX_NAME_LEN - 1] = '\0';
+        // printf("Device %d: %s\n", iter + 1, dev_names[iter]);
+        iter++;
+
+        if (iter >= PCAP_MAX_DEVS) {
+            fprintf(stderr, "Warning: Maximum number of devices reached (%d).\n", PCAP_MAX_DEVS);
+            break;
+        }
+    }
+
+
+    pcap_destroy_device(dev_init); 
+    return PCAP_RET_OK;
+}
+
+
+void pcap_destroy_device(struct pcap_device_s* device){
     free(device);
 }
 

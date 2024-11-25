@@ -9,6 +9,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <netdb.h>
 #include <pcap.h>
@@ -17,16 +18,25 @@
 #include "../include/pcap_utils/pcap_init.h"
 
 int main(int argc, char* argv[]) {
+    
+    char device_list[PCAP_MAX_DEVS][PCAP_MAX_NAME_LEN];
 
-    struct pcap_device_s *dev_init = {0};
-
-    dev_init = pkt_pcap_alloc_device();
-
-    if (0 != pkt_pcap_init_available_devices(dev_init)) {
+    
+    fprintf(stdout, "Welcome to PacketAnalyzer| A command-line tool for packet capture\n");
+    fprintf(stdout, "Interface to capture:\n");
+    if (PCAP_RET_OK != pcap_register_pkt(*device_list)){
+        fprintf(stderr, "Not able to fill in packet capture\n");
         return -1;
     }
 
-    pkt_pcap_destroy_device(dev_init);    
+    if (argc < 2) {
+        fprintf(stderr, "ERROR: Missing parameter\n"
+                        "Usage: ./packet_analyzer <interface_name>\n"
+                        "Where interface name is any interface from the list above.\n"
+                        "\n");
+        return -1;
+    }
     
+
     return 0;
 }
