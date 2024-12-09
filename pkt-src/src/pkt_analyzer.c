@@ -19,7 +19,7 @@
 #include "../include/pcap_utils/pcap_sniff_device.h"
 
 int main(int argc, const char* argv[]) {
-    struct pcap_device_s* device = NULL;
+    struct pcap_device_s* device = pcap_alloc_device();
     char device_list[PCAP_MAX_DEVS][PCAP_MAX_NAME_LEN];
     
     fprintf(stdout, "Welcome to PacketAnalyzer | A command-line tool for packet capture\n");
@@ -47,7 +47,7 @@ int main(int argc, const char* argv[]) {
     fprintf(stdout, "Selected interface: %s\n", user_interface);
 
     fprintf(stdout, "Capturing packets on: %s\n", user_interface);
-    
+
     pcap_sniff_device(device, user_interface);
 
     return 0;

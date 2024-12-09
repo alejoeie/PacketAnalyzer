@@ -9,7 +9,7 @@
 #include "../../include/pcap_utils/pcap_init.h"
 
 pcap_result_e pcap_sniff_device(struct pcap_device_s *device, const char* interface_to_sniff) {
-
+    
     struct pcap_if *pcap_device = device->capture;
     struct pcap_if *d;
     if (device == NULL) {
