@@ -16,27 +16,39 @@
 #include "../include/pkt_headers.h"
 #include "../include/pkt_analyzer.h"
 #include "../include/pcap_utils/pcap_init.h"
+#include "../include/pcap_utils/pcap_sniff_device.h"
 
-int main(int argc, char* argv[]) {
-    
+int main(int argc, const char* argv[]) {
+    struct pcap_device_s* device = NULL;
     char device_list[PCAP_MAX_DEVS][PCAP_MAX_NAME_LEN];
-
     
-    fprintf(stdout, "Welcome to PacketAnalyzer| A command-line tool for packet capture\n");
-    fprintf(stdout, "Interface to capture:\n");
-    if (PCAP_RET_OK != pcap_register_pkt(*device_list)){
-        fprintf(stderr, "Not able to fill in packet capture\n");
+    fprintf(stdout, "Welcome to PacketAnalyzer | A command-line tool for packet capture\n");
+    fprintf(stdout, "Available interfaces:\n");
+
+    // Retrieve device list and count
+    int device_count = pcap_register_pkt(device, device_list);
+    if (device_count == 0) {
+        fprintf(stderr, "No devices found or unable to retrieve device list.\n");
         return -1;
+    }
+
+    for (int i = 0; i < device_count; i++) {
+        fprintf(stdout, "Device %d: %s\n", i + 1, device_list[i]);
     }
 
     if (argc < 2) {
         fprintf(stderr, "ERROR: Missing parameter\n"
                         "Usage: ./packet_analyzer <interface_name>\n"
-                        "Where interface name is any interface from the list above.\n"
-                        "\n");
+                        "Where interface name is any interface from the list above.\n");
         return -1;
     }
+
+    const char* user_interface = argv[1];
+    fprintf(stdout, "Selected interface: %s\n", user_interface);
+
+    fprintf(stdout, "Capturing packets on: %s\n", user_interface);
     
+    pcap_sniff_device(device, user_interface);
 
     return 0;
 }

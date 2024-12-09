@@ -1,5 +1,6 @@
 add_library(pcap_utils STATIC
     pcap_init.c
+    pcap_sniff_device.c
 )
 
 # Link with libpcap

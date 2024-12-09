@@ -33,6 +33,6 @@ struct pcap_device_s *pcap_alloc_device(void);
 
 void pcap_destroy_device(struct pcap_device_s *device);
 
-pcap_result_e pcap_register_pkt(char *device_list);
+int pcap_register_pkt(struct pcap_device_s *device, char device_list[PCAP_MAX_DEVS][PCAP_MAX_NAME_LEN]);
 
 #endif

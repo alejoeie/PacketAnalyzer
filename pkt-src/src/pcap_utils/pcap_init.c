@@ -21,7 +21,7 @@ pcap_result_e pcap_init_available_devices(struct pcap_device_s *device) {
     // int ret;
     int all_devs;
     // struct in_addr addr;
-    struct pcap_if *pcap_device, *d;
+    struct pcap_if *pcap_device;
 
 
     if(device == NULL) {
@@ -33,35 +33,35 @@ pcap_result_e pcap_init_available_devices(struct pcap_device_s *device) {
         fprintf(stderr, "ERROR %s", device->errbuf);
         return PCAP_RET_FAIL;
     }
-    
-    for (d = pcap_device; d != NULL; d = d->next){
-        printf("\t============\n");
-        printf("\tInterface: %s\n", d->name);
-        printf("\tDescription: %s\n", d->description);
-        printf("\tNetMask Address: %s\n", d->description);
 
-        if (d->addresses) {
-            for (struct pcap_addr *p_addr = d->addresses; p_addr != NULL; p_addr = p_addr->next){
-                if (p_addr->addr->sa_family == AF_INET) { // IPv4 Address
-                    struct sockaddr_in *ipv4 = (struct sockaddr_in *)p_addr->addr;
-                    printf("\tIPv4 Address: %s\n", inet_ntoa(ipv4->sin_addr));
+    // for (d = pcap_device; d != NULL; d = d->next){
+    //     printf("\t============\n");
+    //     printf("\tInterface: %s\n", d->name);
+        // printf("\tDescription: %s\n", d->description);
+        // printf("\tNetMask Address: %s\n", d->description);
+
+    //     if (d->addresses) {
+    //         for (struct pcap_addr *p_addr = d->addresses; p_addr != NULL; p_addr = p_addr->next){
+    //             if (p_addr->addr->sa_family == AF_INET) { // IPv4 Address
+    //                 struct sockaddr_in *ipv4 = (struct sockaddr_in *)p_addr->addr;
+    //                 printf("\tIPv4 Address: %s\n", inet_ntoa(ipv4->sin_addr));
     
-                    // Print the subnet mask
-                    if (p_addr->netmask) {
-                        struct sockaddr_in *netmask = (struct sockaddr_in *)p_addr->netmask;
-                        printf("\tSubnet Mask: %s\n", inet_ntoa(netmask->sin_addr));
-                    }
-                } else if(p_addr->addr->sa_family == AF_INET6) {
-                    char buffer[INET6_ADDRSTRLEN];
-                    struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)p_addr->addr;
-                    inet_ntop(AF_INET6, &ipv6->sin6_addr, buffer, sizeof(buffer));
-                    printf("\tIPv6 Address: %s\n", buffer);
-                }
-            }
-        } else {
-            printf("\tAddresses: (No addresses available)\n");
-        }
-    }
+    //                 // Print the subnet mask
+    //                 if (p_addr->netmask) {
+    //                     struct sockaddr_in *netmask = (struct sockaddr_in *)p_addr->netmask;
+    //                     printf("\tSubnet Mask: %s\n", inet_ntoa(netmask->sin_addr));
+    //                 }
+    //             } else if(p_addr->addr->sa_family == AF_INET6) {
+    //                 char buffer[INET6_ADDRSTRLEN];
+    //                 struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)p_addr->addr;
+    //                 inet_ntop(AF_INET6, &ipv6->sin6_addr, buffer, sizeof(buffer));
+    //                 printf("\tIPv6 Address: %s\n", buffer);
+    //             }
+    //         }
+    //     } else {
+    //         printf("\tAddresses: (No addresses available)\n");
+    //     }
+    // }
 
     device->capture = pcap_device;
 
@@ -69,21 +69,19 @@ pcap_result_e pcap_init_available_devices(struct pcap_device_s *device) {
 }
 
 
-pcap_result_e pcap_register_pkt(char *device_list) {
-    char dev_names[PCAP_MAX_DEVS][PCAP_MAX_NAME_LEN];
+int pcap_register_pkt(struct pcap_device_s* device, char device_list[PCAP_MAX_DEVS][PCAP_MAX_NAME_LEN]) {
     int iter = 0;
-    struct pcap_device_s *dev_init, *capture_pkt;
+    struct pcap_device_s *capture_pkt;
 
-    dev_init = pcap_alloc_device();
+    device = pcap_alloc_device();
 
-    if (PCAP_RET_OK != pcap_init_available_devices(dev_init)) {
+    if (PCAP_RET_OK != pcap_init_available_devices(device)) {
         return PCAP_RET_FAIL;
     }
  
-    for(capture_pkt = dev_init; capture_pkt->capture != NULL; capture_pkt->capture = capture_pkt->capture->next){
-        strncpy(dev_names[iter], capture_pkt->capture->name, PCAP_MAX_NAME_LEN - 1);
-        dev_names[iter][PCAP_MAX_NAME_LEN - 1] = '\0';
-        // printf("Device %d: %s\n", iter + 1, dev_names[iter]);
+    for(capture_pkt = device; capture_pkt->capture != NULL; capture_pkt->capture = capture_pkt->capture->next){
+        strncpy(device_list[iter], capture_pkt->capture->name, PCAP_MAX_NAME_LEN - 1);
+        device_list[iter][PCAP_MAX_NAME_LEN - 1] = '\0';
         iter++;
 
         if (iter >= PCAP_MAX_DEVS) {
@@ -92,10 +90,10 @@ pcap_result_e pcap_register_pkt(char *device_list) {
         }
     }
 
-
-    pcap_destroy_device(dev_init); 
-    return PCAP_RET_OK;
+    // pcap_destroy_device(device); 
+    return iter;
 }
+
 
 
 void pcap_destroy_device(struct pcap_device_s* device){
