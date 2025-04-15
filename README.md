@@ -71,7 +71,7 @@ mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Debug ..
 make
 ```
-2. ##Run the program
+2. ## Run the program
 You must run the program with elevated privileges (to allow raw socket operations):
 ``` bash
 sudo ./packet_sniffer <interface_name>
@@ -81,7 +81,7 @@ Or, alternatively, you can set the required permissions:
 sudo setcap cap_net_raw,cap_net_admin=eip ./packet_sniffer
 ./packet_sniffer <interface_name>
 ```
-Replace <interface_name> with the interface you want to sniff, e.g., eth0, wlan0, etc. Do not use "any" as it does not provide Ethernet headers.
+Replace `<interface_name>` with the interface you want to sniff, e.g., `eth0`, `wlan0`, etc. Do not use `any` as it does not provide Ethernet headers.
 
 
 # Example Output
@@ -107,7 +107,7 @@ Destination IP: 192.168.0.1
 
 # Notes
 
-Avoid using the any interface for sniffing, as it does not include Ethernet headers and causes misalignment in parsing.
+Avoid using the `any` interface for sniffing, as it does not include Ethernet headers and causes misalignment in parsing.
 
 Currently supports parsing Ethernet and IPv4 headers. TCP/UDP support can be added as an improvement.
 
