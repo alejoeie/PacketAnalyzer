@@ -65,22 +65,52 @@ pkt-src
 ```
 
 ## Building the project
-To compile the project using CMake:
-1. Create a `build` directory
+1. Compile the project
 ``` bash
 mkdir build && cd build
-```
-2. Run `CMake` to  configure the project:
-``` bash
-cmake ..
-```
-3. Run `make` to compile the code:
-``` bash
+cmake -DCMAKE_BUILD_TYPE=Debug ..
 make
 ```
-
-## Running the Analyzer
-Run the binary:
+2. ##Run the program
+You must run the program with elevated privileges (to allow raw socket operations):
 ``` bash
-./packet_analyzer
+sudo ./packet_sniffer <interface_name>
 ```
+Or, alternatively, you can set the required permissions:
+``` bash
+sudo setcap cap_net_raw,cap_net_admin=eip ./packet_sniffer
+./packet_sniffer <interface_name>
+```
+Replace <interface_name> with the interface you want to sniff, e.g., eth0, wlan0, etc. Do not use "any" as it does not provide Ethernet headers.
+
+
+# Example Output
+```
+Packet number: 1
+Ether type: 00000800
+Valid header
+=== IPv4 Header ===
+Version: 4
+IHL (Header Length): 5 (20 bytes)
+Type of Service: 0x00
+Total Length: 60 bytes
+Identification: 0x1C46 (7238)
+Flags: 0x2
+Fragment Offset: 0
+TTL: 64
+Protocol: 6
+Header Checksum: 0xB1E6
+Source IP: 192.168.0.101
+Destination IP: 192.168.0.1
+===================
+```
+
+# Notes
+
+Avoid using the any interface for sniffing, as it does not include Ethernet headers and causes misalignment in parsing.
+
+Currently supports parsing Ethernet and IPv4 headers. TCP/UDP support can be added as an improvement.
+
+# License
+
+MIT License
