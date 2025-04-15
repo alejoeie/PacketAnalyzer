@@ -39,14 +39,19 @@ The project is designed with modularity and scalability in mind, ensuring that e
 ```
 
 ## Setup 
-1. Install libpcap:
-- On EndeavourOS or other Arch-based distros:
-``` bash
-sudo pacman -S libpcap
+Ensure you have `libpcap` and a C toolchain installed:
+#### Ubuntu / Debian
+```bash
+sudo apt update
+sudo apt install build-essential libpcap-dev
 ```
-2. Ensure CMake is installed:
-``` bash
-sudo pacman -S cmake
+#### Fedora
+```bash
+sudo dnf install gcc make libpcap-devel
+```
+### Arch
+```bash
+sudo pacman -S base-devel libpcap
 ```
 
 ## Project Structure
