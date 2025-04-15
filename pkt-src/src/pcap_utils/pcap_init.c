@@ -69,35 +69,20 @@ pcap_result_e pcap_init_available_devices(struct pcap_device_s *device) {
 }
 
 
-int pcap_register_pkt(struct pcap_device_s* device, char device_list[PCAP_MAX_DEVS][PCAP_MAX_NAME_LEN]) {
+int pcap_register_pkt(struct pcap_device_s** device, char device_list[PCAP_MAX_DEVS][PCAP_MAX_NAME_LEN]) {
     int iter = 0;
+    struct pcap_device_s *capture_pkt;
 
-    if (PCAP_RET_OK != pcap_init_available_devices(device)) {
+    *device = pcap_alloc_device();
+
+    if (PCAP_RET_OK != pcap_init_available_devices(*device)) {
         return PCAP_RET_FAIL;
     }
-    struct pcap_if *tmp = device->capture;
-
-    while(tmp) {
-        printf("Capture name %s \n", tmp->name);
-        strncpy(device_list[iter], tmp->name, PCAP_MAX_NAME_LEN - 1);
+ 
+    for(capture_pkt = *device; capture_pkt->capture != NULL; capture_pkt->capture = capture_pkt->capture->next){
+        strncpy(device_list[iter], capture_pkt->capture->name, PCAP_MAX_NAME_LEN - 1);
         device_list[iter][PCAP_MAX_NAME_LEN - 1] = '\0';
         iter++;
-
-        if (iter >= PCAP_MAX_DEVS) {
-            fprintf(stderr, "Warning: Maximum number of devices reached (%d).\n", PCAP_MAX_DEVS);
-            break;
-        }
-        tmp = tmp->next;
-    }
-
-    // AQUI ESTA EL PROBLEMA
-    /*
-    for(struct pcap_device_s * temp = capture_pkt; temp->capture != NULL; temp->capture = temp->capture->next){
-        printf("Capture name %s \n", temp->capture->name);
-        strncpy(device_list[iter], temp->capture->name, PCAP_MAX_NAME_LEN - 1);
-        device_list[iter][PCAP_MAX_NAME_LEN - 1] = '\0';
-        iter++;
-
         if (iter >= PCAP_MAX_DEVS) {
             fprintf(stderr, "Warning: Maximum number of devices reached (%d).\n", PCAP_MAX_DEVS);
             break;
@@ -105,7 +90,6 @@ int pcap_register_pkt(struct pcap_device_s* device, char device_list[PCAP_MAX_DE
     }
     */
 
-    // pcap_destroy_device(device); 
     return iter;
 }
 

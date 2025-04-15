@@ -7,7 +7,7 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED True)
 
 # Build flags
-set(C_WARNINGS "-Wall -Wstrict-prototypes -Wshadow -Werror")
+set(C_WARNINGS "-Wall -Wstrict-prototypes -Wshadow -Werror -Wstringop-overflow")
 set(CXX_WARNINGS "-Wall -Wshadow -Werror")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu11 ${C_WARNINGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 ${CXX_WARNINGS}")
@@ -22,6 +22,7 @@ add_subdirectory(src/pcap_utils)
 # Collect source files
 set(SOURCES
     src/pkt_analyzer.c
+    src/pkt_sniffing.c
 )
 
 add_executable(packet_analyzer ${SOURCES})
