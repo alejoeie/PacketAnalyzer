@@ -21,12 +21,9 @@
 int main(int argc, const char* argv[]) {
     struct pcap_device_s* device = NULL;
     char device_list[PCAP_MAX_DEVS][PCAP_MAX_NAME_LEN];
-    
-    fprintf(stdout, "Welcome to PacketAnalyzer | A command-line tool for packet capture\n");
-    fprintf(stdout, "Available interfaces:\n");
 
     // Retrieve device list and count
-    int device_count = pcap_register_pkt(device, device_list);
+    int device_count = pcap_register_pkt(&device, device_list);
     if (device_count == 0) {
         fprintf(stderr, "No devices found or unable to retrieve device list.\n");
         return -1;
@@ -48,7 +45,7 @@ int main(int argc, const char* argv[]) {
 
     fprintf(stdout, "Capturing packets on: %s\n", user_interface);
     
-    pcap_sniff_device(device, user_interface);
+    pcap_sniff_device(device_list, user_interface, device_count);
 
     return 0;
 }
